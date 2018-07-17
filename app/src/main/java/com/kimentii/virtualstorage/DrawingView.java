@@ -1,10 +1,11 @@
 package com.kimentii.virtualstorage;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -75,6 +76,10 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
             whitePaint.setStrokeWidth(1);
             redPaint.setColor(Color.RED);
             whitePaint.setColor(Color.WHITE);
+
+            Bitmap boxBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box_light);
+            boxBitmap = Bitmap.createScaledBitmap(boxBitmap, blockWidth, blockHeight, false);
+
             while (mRunning) {
                 canvas = null;
                 try {
@@ -90,8 +95,12 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
                             } else {
                                 paint = whitePaint;
                             }
-                            canvas.drawRect(j * blockWidth, i * blockHeight,
-                                    j * blockWidth + blockWidth, i * blockHeight + blockHeight, paint);
+                            if (map[i][j] == 'b') {
+                                canvas.drawBitmap(boxBitmap, j * blockWidth, i * blockHeight, null);
+                            } else {
+                                canvas.drawRect(j * blockWidth, i * blockHeight,
+                                        j * blockWidth + blockWidth, i * blockHeight + blockHeight, paint);
+                            }
                         }
                     }
                 } finally {
