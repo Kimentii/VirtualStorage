@@ -9,9 +9,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import com.kimentii.virtualstorage.commands.Command;
+import com.kimentii.virtualstorage.commands.MoveCommand;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import static com.kimentii.virtualstorage.Robot.EXTRA_COMMAND;
 
 public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = DrawingView.class.getSimpleName();
@@ -53,7 +62,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
     class DrawingThread extends Thread {
         private boolean mRunning = false;
         private SurfaceHolder mSurfaceHolder;
-        private char mMap[][];
+        private Map mMap;
 
 
         private Paint mRedPaint;
@@ -70,8 +79,8 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
             final int totalHeight = DrawingView.this.getHeight();
             final int totalWidth = DrawingView.this.getWidth();
             //Log.d(TAG, "screen: " + totalHeight + "x" + totalWidth);
-            final int heightInBlocks = mMap.length;
-            final int widthInBlocks = mMap[0].length;
+            final int heightInBlocks = mMap.getMapHeight();
+            final int widthInBlocks = mMap.getMapWidth();
             mBlockHeight = (int) Math.floor(((double) totalHeight) / heightInBlocks);
             mBlockWidth = (int) Math.floor(((double) totalWidth) / widthInBlocks);
             mRedPaint = new Paint();
@@ -81,8 +90,9 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
             mRedPaint.setColor(Color.RED);
             mWhitPaint.setColor(Color.WHITE);
 
-            DrawingView.this.mContext.registerReceiver(new BotMessagesBroadcastReceiver(mMap),
-                    new IntentFilter(Robot.ROBOT_MESSAGES_FILTER));
+            LocalBroadcastManager.getInstance(DrawingView.this.getContext()).registerReceiver(
+                    new BotMessagesBroadcastReceiver(mMap),
+                    new IntentFilter(Robot.ROBOTS_COMMANDS_FILTER));
 
             mBoxBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box_light);
             mBoxBitmap = Bitmap.createScaledBitmap(mBoxBitmap, mBlockWidth, mBlockHeight, false);
@@ -98,8 +108,13 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         public void run() {
             Canvas canvas;
 
+            ArrayList<Command> commands = new ArrayList<>();
+            commands.add(new MoveCommand());
+            Robot robot = new Robot(mContext, mMap, 1, commands);
 
-            Robot robot = new Robot(mContext, mMap, 1);
+            ArrayList<Command> commands1 = new ArrayList<>();
+            commands1.add(new MoveCommand());
+            Robot robot1 = new Robot(mContext, mMap, 1, commands1);
             while (mRunning) {
                 canvas = null;
                 try {
@@ -107,8 +122,9 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
                     if (canvas == null)
                         continue;
 
-                    robot.update();
                     drawMap(canvas);
+                    robot.update();
+                    robot1.update();
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -124,21 +140,21 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
         private void drawMap(Canvas canvas) {
             canvas.drawColor(Color.GREEN);
-            for (int i = 0; i < mMap.length; i++) {
-                for (int j = 0; j < mMap[i].length; j++) {
-                    if (mMap[i][j] == GlobalConfigurations.SYMBOL_BOX) {
-                        canvas.drawBitmap(mBoxBitmap, j * mBlockWidth, i * mBlockHeight, null);
-                    } else if (mMap[i][j] == GlobalConfigurations.SYMBOL_ROBOT) {
-                        canvas.drawBitmap(mRobotBitmap, j * mBlockWidth, i * mBlockHeight, null);
+            for (int y = 0; y < mMap.getMapHeight(); y++) {
+                for (int x = 0; x < mMap.getMapWidth(); x++) {
+                    if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_BOX) {
+                        canvas.drawBitmap(mBoxBitmap, x * mBlockWidth, y * mBlockHeight, null);
+                    } else if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_ROBOT) {
+                        canvas.drawBitmap(mRobotBitmap, x * mBlockWidth, y * mBlockHeight, null);
                     } else {
                         Paint paint = null;
-                        if (mMap[i][j] == GlobalConfigurations.SYMBOL_BARRIER) {
+                        if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_BARRIER) {
                             paint = mRedPaint;
                         } else {
                             paint = mWhitPaint;
                         }
-                        canvas.drawRect(j * mBlockWidth, i * mBlockHeight,
-                                j * mBlockWidth + mBlockWidth, i * mBlockHeight + mBlockHeight, paint);
+                        canvas.drawRect(x * mBlockWidth, y * mBlockHeight,
+                                x * mBlockWidth + mBlockWidth, y * mBlockHeight + mBlockHeight, paint);
                     }
                 }
             }
@@ -147,18 +163,16 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     class BotMessagesBroadcastReceiver extends BroadcastReceiver {
-        private char[][] mMap;
+        private Map mMap;
 
-        BotMessagesBroadcastReceiver(char[][] map) {
+        BotMessagesBroadcastReceiver(Map map) {
             mMap = map;
         }
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            int x = intent.getExtras().getInt("x");
-            int y = intent.getExtras().getInt("y");
-            Log.d(TAG, "onReceive: x= " + x + " y= " + y);
-            mMap[y][x] = GlobalConfigurations.SYMBOL_ROBOT;
+            Command command = (Command) intent.getExtras().getSerializable(EXTRA_COMMAND);
+            command.updateMap(mMap);
         }
     }
 }

@@ -24,13 +24,7 @@ public class GlobalConfigurations {
 
     private static GlobalConfigurations sGlobalConfigurations;
 
-    private char mMap[][];
-    private final int mMapHeight;
-    private final int mMapWidth;
-    private int mStartX;
-    private int mStartY;
-    private int mEndX;
-    private int mEndY;
+    private Map mMap;
 
     private GlobalConfigurations(Context context) {
         Log.d(TAG, "GlobalConfigurations: creating");
@@ -52,29 +46,15 @@ public class GlobalConfigurations {
 
         Gson gson = new Gson();
         JsonMap jsonMap = gson.fromJson(totalStr.toString(), JsonMap.class);
-        mMap = new char[jsonMap.getMap().size()][];
-        for (int i = 0; i < mMap.length; i++) {
-            mMap[i] = jsonMap.getMap().get(i).toCharArray();
+        char[][] map = new char[jsonMap.getMap().size()][];
+        for (int i = 0; i < map.length; i++) {
+            map[i] = jsonMap.getMap().get(i).toCharArray();
         }
-        mMapHeight = mMap.length;
-        mMapWidth = mMap[0].length;
-        for (int i = 0; i < mMapHeight; i++) {
-            for (int j = 0; j < mMapWidth; j++) {
-                switch (mMap[i][j]) {
-                    case SYMBOL_START:
-                        mStartX = j;
-                        mStartY = i;
-                        break;
-                    case SYMBOL_END:
-                        mEndX = j;
-                        mEndY = i;
-                        break;
-                }
-            }
-        }
-        Log.d(TAG, "GlobalConfigurations: map width= " + mMapWidth + " height= " + mMapHeight);
-        Log.d(TAG, "GlobalConfigurations: start x=" + mStartX + " y=" + mStartY);
-        Log.d(TAG, "GlobalConfigurations: end x=" + mEndX + " y=" + mEndY);
+        mMap = new Map(map);
+
+        Log.d(TAG, "GlobalConfigurations: map width= " + mMap.getMapWidth() + " height= " + mMap.getMapHeight());
+        Log.d(TAG, "GlobalConfigurations: start x=" + mMap.getStartX() + " y=" + mMap.getStartY());
+        Log.d(TAG, "GlobalConfigurations: end x=" + mMap.getEndX() + " y=" + mMap.getStartY());
     }
 
     public static GlobalConfigurations getInstance(Context context) {
@@ -84,32 +64,8 @@ public class GlobalConfigurations {
         return sGlobalConfigurations;
     }
 
-    public char[][] getMap() {
+    public Map getMap() {
         return mMap;
-    }
-
-    public int getStartX() {
-        return mStartX;
-    }
-
-    public int getStartY() {
-        return mStartY;
-    }
-
-    public int getEndX() {
-        return mEndX;
-    }
-
-    public int getEndY() {
-        return mEndY;
-    }
-
-    public int getMapHeight() {
-        return mMapHeight;
-    }
-
-    public int getMapWidth() {
-        return mMapWidth;
     }
 
     private class JsonMap {

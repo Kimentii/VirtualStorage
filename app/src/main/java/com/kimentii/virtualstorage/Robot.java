@@ -4,94 +4,68 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
+import android.support.v4.content.LocalBroadcastManager;
+
+import com.kimentii.virtualstorage.commands.Command;
+
+import java.util.ArrayList;
 
 public class Robot {
     private static final String TAG = Robot.class.getSimpleName();
-    public static final String ROBOT_MESSAGES_FILTER = "com.kimentii.virtualstorage.BOT_MESSAGE";
+    public static final String ROBOTS_COMMANDS_FILTER = "com.kimentii.virtualstorage.BOT_MESSAGE";
+    public static final String EXTRA_COMMAND = "com.kimentii.virtualstorage.extras.COMMAND";
 
-    private char[][] mMap;
-    private final int mMapHeight;
-    private final int mMapWidth;
+    private Map mMap;
+    private ArrayList<Command> mAvailableCommands;
 
     private Context mContext;
     private GlobalConfigurations mGlobalConfigurations;
-    private int mMyLocationX = -1;
-    private int mMyLocationY = -1;
+    private RobotsCommandsReceiver mRobotsCommandsReceiver;
+    private int mLocationX = -1;
+    private int mLocationY = -1;
     private int mId;
 
-    public Robot(Context context, final char[][] map, int id) {
+    public Robot(Context context, final Map map, int id, ArrayList<Command> availableCommands) {
         mId = id;
-        mMap = new char[map.length][map[0].length];
-        mMapHeight = mMap.length;
-        mMapWidth = mMap[0].length;
-        for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map[0].length; j++) {
-                mMap[i][j] = map[i][j];
-            }
-        }
+        mMap = map.getCopy();
         mContext = context;
-        BotBroadcastReceiver botBroadcastReceiver = new BotBroadcastReceiver();
-        context.registerReceiver(botBroadcastReceiver, new IntentFilter(ROBOT_MESSAGES_FILTER));
+        mAvailableCommands = availableCommands;
+        mRobotsCommandsReceiver = new RobotsCommandsReceiver();
+        LocalBroadcastManager.getInstance(context).registerReceiver(mRobotsCommandsReceiver,
+                new IntentFilter(ROBOTS_COMMANDS_FILTER));
         mGlobalConfigurations = GlobalConfigurations.getInstance(context);
     }
 
     public void update() {
-        if (mMyLocationX == -1 && mMyLocationY == -1) {
-            int startX = mGlobalConfigurations.getStartX();
-            int startY = mGlobalConfigurations.getStartY();
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    if (isFreeCell(startX + i, startY + j)) {
-                        mMyLocationX = startX + i;
-                        mMyLocationY = startY + j;
-                        Intent intent = new Intent();
-                        intent.setAction(ROBOT_MESSAGES_FILTER);
-                        intent.putExtra("x", mMyLocationX);
-                        intent.putExtra("y", mMyLocationY);
-                        mContext.sendBroadcast(intent);
-                        return;
-                    }
-                }
-            }
-        } else {
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    if (isFreeCell(mMyLocationX + i, mMyLocationY + j)) {
-                        mMap[mMyLocationY][mMyLocationX] = ' ';
-                        mMyLocationX = mMyLocationX + i;
-                        mMyLocationY = mMyLocationY + j;
-                        Intent intent = new Intent();
-                        intent.setAction(ROBOT_MESSAGES_FILTER);
-                        intent.putExtra("x", mMyLocationX);
-                        intent.putExtra("y", mMyLocationY);
-                        mContext.sendBroadcast(intent);
-                        return;
-                    }
-                }
+        for (int i = 0; i < mAvailableCommands.size(); i++) {
+            if ((mAvailableCommands.get(i).prepareCommandAndUpdateRobot(Robot.this, mMap))) {
+                Intent intent = new Intent();
+                intent.setAction(ROBOTS_COMMANDS_FILTER);
+                intent.putExtra(EXTRA_COMMAND, mAvailableCommands.get(i));
+                LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
             }
         }
     }
 
-    private boolean isFreeCell(int x, int y) {
-        Log.d(TAG, "isFreeCell: x= " + x + " y= " + y);
-        if (x >= mMapWidth || y >= mMapHeight
-                || x < 0 || y < 0) {
-            return false;
-        }
-        if (mMap[y][x] != GlobalConfigurations.SYMBOL_FREE_SPACE) {
-            return false;
-        }
-        return true;
+    public void setNewLocation(int x, int y) {
+        mLocationX = x;
+        mLocationY = y;
     }
 
-    class BotBroadcastReceiver extends BroadcastReceiver {
+    public int getLocationX() {
+        return mLocationX;
+    }
+
+    public int getLocationY() {
+        return mLocationY;
+    }
+
+    class RobotsCommandsReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            int x = intent.getExtras().getInt("x");
-            int y = intent.getExtras().getInt("y");
-            mMap[y][x] = GlobalConfigurations.SYMBOL_ROBOT;
+            Command command = (Command) intent.getExtras().getSerializable(EXTRA_COMMAND);
+            command.updateMap(mMap);
         }
     }
 }
