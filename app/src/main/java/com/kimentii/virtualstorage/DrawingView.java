@@ -18,7 +18,6 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
     private DrawingThread mDrawingThread;
     private Context mContext;
-    private char mMap[][];
 
     public DrawingView(Context context) {
         super(context);
@@ -54,9 +53,41 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
     class DrawingThread extends Thread {
         private boolean mRunning = false;
         private SurfaceHolder mSurfaceHolder;
+        private char mMap[][];
+
+
+        private Paint mRedPaint;
+        private Paint mWhitPaint;
+        private int mBlockHeight;
+        private int mBlockWidth;
+        private Bitmap mBoxBitmap;
+        private Bitmap mRobotBitmap;
 
         public DrawingThread(SurfaceHolder surfaceHolder) {
             this.mSurfaceHolder = surfaceHolder;
+            GlobalConfigurations globalConfigurations = GlobalConfigurations.getInstance(mContext);
+            mMap = globalConfigurations.getMap();
+            final int totalHeight = DrawingView.this.getHeight();
+            final int totalWidth = DrawingView.this.getWidth();
+            //Log.d(TAG, "screen: " + totalHeight + "x" + totalWidth);
+            final int heightInBlocks = mMap.length;
+            final int widthInBlocks = mMap[0].length;
+            mBlockHeight = (int) Math.floor(((double) totalHeight) / heightInBlocks);
+            mBlockWidth = (int) Math.floor(((double) totalWidth) / widthInBlocks);
+            mRedPaint = new Paint();
+            mWhitPaint = new Paint();
+            mRedPaint.setStrokeWidth(1);
+            mWhitPaint.setStrokeWidth(1);
+            mRedPaint.setColor(Color.RED);
+            mWhitPaint.setColor(Color.WHITE);
+
+            DrawingView.this.mContext.registerReceiver(new BotMessagesBroadcastReceiver(mMap),
+                    new IntentFilter(Robot.ROBOT_MESSAGES_FILTER));
+
+            mBoxBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box_light);
+            mBoxBitmap = Bitmap.createScaledBitmap(mBoxBitmap, mBlockWidth, mBlockHeight, false);
+            mRobotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
+            mRobotBitmap = Bitmap.createScaledBitmap(mRobotBitmap, mBlockWidth, mBlockHeight, false);
         }
 
         public void setRunning(boolean running) {
@@ -66,29 +97,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         @Override
         public void run() {
             Canvas canvas;
-            GlobalConfigurations globalConfigurations = GlobalConfigurations.getInstance(mContext);
-            mMap = globalConfigurations.getMap();
-            final int totalHeight = DrawingView.this.getHeight();
-            final int totalWidth = DrawingView.this.getWidth();
-            //Log.d(TAG, "screen: " + totalHeight + "x" + totalWidth);
-            final int heightInBlocks = mMap.length;
-            final int widthInBlocks = mMap[0].length;
-            final int blockHeight = (int) Math.floor(((double) totalHeight) / heightInBlocks);
-            final int blockWidth = (int) Math.floor(((double) totalWidth) / widthInBlocks);
-            Paint redPaint = new Paint();
-            Paint whitePaint = new Paint();
-            redPaint.setStrokeWidth(1);
-            whitePaint.setStrokeWidth(1);
-            redPaint.setColor(Color.RED);
-            whitePaint.setColor(Color.WHITE);
 
-            DrawingView.this.mContext.registerReceiver(new BotMessagesBroadcastReceiver(),
-                    new IntentFilter(Robot.ROBOT_MESSAGES_FILTER));
-
-            Bitmap boxBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box_light);
-            boxBitmap = Bitmap.createScaledBitmap(boxBitmap, blockWidth, blockHeight, false);
-            Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
-            robotBitmap = Bitmap.createScaledBitmap(robotBitmap, blockWidth, blockHeight, false);
 
             Robot robot = new Robot(mContext, mMap, 1);
             while (mRunning) {
@@ -97,27 +106,9 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
                     canvas = mSurfaceHolder.lockCanvas(null);
                     if (canvas == null)
                         continue;
-                    canvas.drawColor(Color.GREEN);
+
                     robot.update();
-                    for (int i = 0; i < mMap.length; i++) {
-                        for (int j = 0; j < mMap[i].length; j++) {
-                            Paint paint = null;
-                            if (mMap[i][j] == '-') {
-                                paint = redPaint;
-                            } else {
-                                paint = whitePaint;
-                            }
-                            if (mMap[i][j] == GlobalConfigurations.SYMBOL_BOX) {
-                                canvas.drawBitmap(boxBitmap, j * blockWidth, i * blockHeight, null);
-                            } else if (mMap[i][j] == GlobalConfigurations.SYMBOL_ROBOT) {
-                                Log.d(TAG, "run: Drawing Robot");
-                                canvas.drawBitmap(robotBitmap, j * blockWidth, i * blockHeight, null);
-                            } else {
-                                canvas.drawRect(j * blockWidth, i * blockHeight,
-                                        j * blockWidth + blockWidth, i * blockHeight + blockHeight, paint);
-                            }
-                        }
-                    }
+                    drawMap(canvas);
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -130,9 +121,37 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
         }
+
+        private void drawMap(Canvas canvas) {
+            canvas.drawColor(Color.GREEN);
+            for (int i = 0; i < mMap.length; i++) {
+                for (int j = 0; j < mMap[i].length; j++) {
+                    if (mMap[i][j] == GlobalConfigurations.SYMBOL_BOX) {
+                        canvas.drawBitmap(mBoxBitmap, j * mBlockWidth, i * mBlockHeight, null);
+                    } else if (mMap[i][j] == GlobalConfigurations.SYMBOL_ROBOT) {
+                        canvas.drawBitmap(mRobotBitmap, j * mBlockWidth, i * mBlockHeight, null);
+                    } else {
+                        Paint paint = null;
+                        if (mMap[i][j] == GlobalConfigurations.SYMBOL_BARRIER) {
+                            paint = mRedPaint;
+                        } else {
+                            paint = mWhitPaint;
+                        }
+                        canvas.drawRect(j * mBlockWidth, i * mBlockHeight,
+                                j * mBlockWidth + mBlockWidth, i * mBlockHeight + mBlockHeight, paint);
+                    }
+                }
+            }
+        }
+
     }
 
     class BotMessagesBroadcastReceiver extends BroadcastReceiver {
+        private char[][] mMap;
+
+        BotMessagesBroadcastReceiver(char[][] map) {
+            mMap = map;
+        }
 
         @Override
         public void onReceive(Context context, Intent intent) {

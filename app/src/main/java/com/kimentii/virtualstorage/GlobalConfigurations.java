@@ -20,6 +20,7 @@ public class GlobalConfigurations {
     public static final char SYMBOL_START = 'S';
     public static final char SYMBOL_END = 'E';
     public static final char SYMBOL_ROBOT = 'R';
+    public static final char SYMBOL_BARRIER = '-';
 
     private static GlobalConfigurations sGlobalConfigurations;
 
