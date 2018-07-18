@@ -23,6 +23,8 @@ public class Robot {
     private RobotsCommandsReceiver mRobotsCommandsReceiver;
     private int mLocationX = -1;
     private int mLocationY = -1;
+    private int mAimX = -1;
+    private int mAimY = -1;
     private int mId;
 
     public Robot(Context context, final Map map, int id, ArrayList<Command> availableCommands) {
@@ -38,6 +40,7 @@ public class Robot {
 
     public void update() {
         for (int i = 0; i < mAvailableCommands.size(); i++) {
+            mAvailableCommands.get(i).init();
             if ((mAvailableCommands.get(i).prepareCommandAndUpdateRobot(Robot.this, mMap))) {
                 Intent intent = new Intent();
                 intent.setAction(ROBOTS_COMMANDS_FILTER);
@@ -50,6 +53,23 @@ public class Robot {
     public void setNewLocation(int x, int y) {
         mLocationX = x;
         mLocationY = y;
+    }
+
+    public void setAim(int x, int y) {
+        mAimX = x;
+        mAimY = y;
+    }
+
+    public boolean hasAim() {
+        return mAimX != -1;
+    }
+
+    public int getAimX() {
+        return mAimX;
+    }
+
+    public int getAimY() {
+        return mAimY;
     }
 
     public int getLocationX() {

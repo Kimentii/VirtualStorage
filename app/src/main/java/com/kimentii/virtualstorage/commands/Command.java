@@ -9,9 +9,11 @@ public abstract class Command implements Serializable {
 
     private int mPriority;
 
-    Command(int priority) {
+    public Command(int priority) {
         mPriority = priority;
     }
+
+    public abstract void init();
 
     /**
      * @param robot - robot, which will do command

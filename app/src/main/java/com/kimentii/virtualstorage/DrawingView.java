@@ -10,14 +10,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.kimentii.virtualstorage.commands.Command;
 import com.kimentii.virtualstorage.commands.MoveCommand;
+import com.kimentii.virtualstorage.commands.ReserveBoxCommand;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import static com.kimentii.virtualstorage.Robot.EXTRA_COMMAND;
@@ -71,6 +70,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         private int mBlockWidth;
         private Bitmap mBoxBitmap;
         private Bitmap mRobotBitmap;
+        private Bitmap mReservedBoxBitmap;
 
         public DrawingThread(SurfaceHolder surfaceHolder) {
             this.mSurfaceHolder = surfaceHolder;
@@ -98,6 +98,8 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
             mBoxBitmap = Bitmap.createScaledBitmap(mBoxBitmap, mBlockWidth, mBlockHeight, false);
             mRobotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
             mRobotBitmap = Bitmap.createScaledBitmap(mRobotBitmap, mBlockWidth, mBlockHeight, false);
+            mReservedBoxBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box);
+            mReservedBoxBitmap = Bitmap.createScaledBitmap(mReservedBoxBitmap, mBlockWidth, mBlockHeight, false);
         }
 
         public void setRunning(boolean running) {
@@ -110,10 +112,12 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
             ArrayList<Command> commands = new ArrayList<>();
             commands.add(new MoveCommand());
+            commands.add(new ReserveBoxCommand());
             Robot robot = new Robot(mContext, mMap, 1, commands);
 
             ArrayList<Command> commands1 = new ArrayList<>();
             commands1.add(new MoveCommand());
+            commands1.add(new ReserveBoxCommand());
             Robot robot1 = new Robot(mContext, mMap, 1, commands1);
             while (mRunning) {
                 canvas = null;
@@ -125,15 +129,16 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
                     drawMap(canvas);
                     robot.update();
                     robot1.update();
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
                 } finally {
                     if (canvas != null) {
                         mSurfaceHolder.unlockCanvasAndPost(canvas);
                     }
+                }
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -142,8 +147,10 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
             canvas.drawColor(Color.GREEN);
             for (int y = 0; y < mMap.getMapHeight(); y++) {
                 for (int x = 0; x < mMap.getMapWidth(); x++) {
-                    if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_BOX) {
+                    if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_FREE_BOX) {
                         canvas.drawBitmap(mBoxBitmap, x * mBlockWidth, y * mBlockHeight, null);
+                    } else if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_RESERVED_BOX) {
+                        canvas.drawBitmap(mReservedBoxBitmap, x * mBlockWidth, y * mBlockHeight, null);
                     } else if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_ROBOT) {
                         canvas.drawBitmap(mRobotBitmap, x * mBlockWidth, y * mBlockHeight, null);
                     } else {

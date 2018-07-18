@@ -15,7 +15,8 @@ import java.util.ArrayList;
 public class GlobalConfigurations {
     private static final String TAG = GlobalConfigurations.class.getSimpleName();
     private static final String sConfigurationFile = "configuration.json";
-    public static final char SYMBOL_BOX = 'B';
+    public static final char SYMBOL_FREE_BOX = 'B';
+    public static final char SYMBOL_RESERVED_BOX = 'b';
     public static final char SYMBOL_FREE_SPACE = ' ';
     public static final char SYMBOL_START = 'S';
     public static final char SYMBOL_END = 'E';

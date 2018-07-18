@@ -7,6 +7,7 @@ import com.kimentii.virtualstorage.Map;
 import com.kimentii.virtualstorage.Robot;
 
 public class MoveCommand extends Command {
+    private static final int COMMAND_PRIORITY = 1;
 
     private int mFromX = -1;
     private int mFromY = -1;
@@ -18,11 +19,15 @@ public class MoveCommand extends Command {
     }
 
     @Override
-    public boolean prepareCommandAndUpdateRobot(Robot robot, Map map) {
+    public void init() {
         mFromX = -1;
         mFromY = -1;
         mToX = -1;
         mToY = -1;
+    }
+
+    @Override
+    public boolean prepareCommandAndUpdateRobot(Robot robot, Map map) {
         if (robot.getLocationX() == -1 && robot.getLocationY() == -1) {
             int startX = map.getStartX();
             int startY = map.getStartY();
