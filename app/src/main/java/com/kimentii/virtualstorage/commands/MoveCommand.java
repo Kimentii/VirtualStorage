@@ -42,17 +42,29 @@ public class MoveCommand extends Command {
                 }
             }
         } else {
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    if (map.isFreeCell(robot.getLocationX() + i, robot.getLocationY() + j)) {
-                        mFromX = robot.getLocationX();
-                        mFromY = robot.getLocationY();
-                        mToX = robot.getLocationX() + i;
-                        mToY = robot.getLocationY() + j;
-                        robot.setNewLocation(mToX, mToY);
-                        return true;
-                    }
-                }
+            int aimX = robot.getAimX();
+            int aimY = robot.getAimY();
+            int dX = aimX - robot.getLocationX();
+            int dY = aimY - robot.getLocationY();
+
+            if (map.isFreeCell(robot.getLocationX() + (int) Math.signum(dX),
+                    robot.getLocationY() + (int) Math.signum(dY))) {
+                mToX = robot.getLocationX() + (int) Math.signum(dX);
+                mToY = robot.getLocationY() + (int) Math.signum(dY);
+            } else if (map.isFreeCell(robot.getLocationX(),
+                    robot.getLocationY() + (int) Math.signum(dY))) {
+                mToX = robot.getLocationX();
+                mToY = robot.getLocationY() + (int) Math.signum(dY);
+            } else if (map.isFreeCell(robot.getLocationX() + (int) Math.signum(dX),
+                    robot.getLocationY())) {
+                mToX = robot.getLocationX() + (int) Math.signum(dX);
+                mToY = robot.getLocationY();
+            }
+            if (mToX != -1) {
+                mFromX = robot.getLocationX();
+                mFromY = robot.getLocationY();
+                robot.setNewLocation(mToX, mToY);
+                return true;
             }
         }
         return false;
