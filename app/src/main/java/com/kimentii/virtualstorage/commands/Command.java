@@ -1,9 +1,15 @@
 package com.kimentii.virtualstorage.commands;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+
 import com.kimentii.virtualstorage.Map;
 import com.kimentii.virtualstorage.Robot;
 
 import java.io.Serializable;
+
+import static com.kimentii.virtualstorage.Robot.EXTRA_COMMAND;
 
 public abstract class Command implements Serializable {
 

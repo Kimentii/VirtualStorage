@@ -32,7 +32,7 @@ public class Robot {
         mMap = map.getCopy();
         mContext = context;
         mAvailableCommands = availableCommands;
-        mRobotsCommandsReceiver = new RobotsCommandsReceiver();
+        mRobotsCommandsReceiver = new RobotsCommandsReceiver(mMap);
         LocalBroadcastManager.getInstance(context).registerReceiver(mRobotsCommandsReceiver,
                 new IntentFilter(ROBOTS_COMMANDS_FILTER));
         mGlobalConfigurations = GlobalConfigurations.getInstance(context);
@@ -139,6 +139,12 @@ public class Robot {
         return null;
     }
 
+    public void destroy() {
+        if (mRobotsCommandsReceiver != null) {
+            LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mRobotsCommandsReceiver);
+        }
+    }
+
     public boolean hasAim() {
         return mAim != null;
     }
@@ -163,7 +169,12 @@ public class Robot {
         return mId;
     }
 
-    class RobotsCommandsReceiver extends BroadcastReceiver {
+    public static class RobotsCommandsReceiver extends BroadcastReceiver {
+        private Map mMap;
+
+        public RobotsCommandsReceiver(Map map) {
+            mMap = map;
+        }
 
         @Override
         public void onReceive(Context context, Intent intent) {

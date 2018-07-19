@@ -15,6 +15,8 @@ import android.view.SurfaceView;
 
 import com.kimentii.virtualstorage.commands.Command;
 
+import java.util.ArrayList;
+
 import static com.kimentii.virtualstorage.Robot.EXTRA_COMMAND;
 
 public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
@@ -58,6 +60,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         private boolean mRunning = false;
         private SurfaceHolder mSurfaceHolder;
         private Map mMap;
+        private RobotsCommandsReceiver mRobotsCommandsReceiver;
 
 
         private Paint mRedPaint;
@@ -86,10 +89,6 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
             mRedPaint.setColor(Color.RED);
             mWhitPaint.setColor(Color.WHITE);
 
-            LocalBroadcastManager.getInstance(DrawingView.this.getContext()).registerReceiver(
-                    new BotMessagesBroadcastReceiver(mMap),
-                    new IntentFilter(Robot.ROBOTS_COMMANDS_FILTER));
-
             mBoxBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box_light);
             mBoxBitmap = Bitmap.createScaledBitmap(mBoxBitmap, mBlockWidth, mBlockHeight, false);
             mRobotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
@@ -106,8 +105,13 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         public void run() {
             Canvas canvas;
 
-            Robot robot = new Robot(mContext, mMap, 1, CommandsFactory.getAllCommands());
-            Robot robot1 = new Robot(mContext, mMap, 2, CommandsFactory.getAllCommands());
+            mRobotsCommandsReceiver = new RobotsCommandsReceiver(mMap);
+            LocalBroadcastManager.getInstance(DrawingView.this.getContext()).registerReceiver(
+                    mRobotsCommandsReceiver,
+                    new IntentFilter(Robot.ROBOTS_COMMANDS_FILTER));
+
+            ArrayList<Robot> robots = new ArrayList<>();
+            robots.add(new Robot(mContext, mMap, 1, CommandsFactory.getAllCommands()));
 
             while (mRunning) {
                 canvas = null;
@@ -117,8 +121,9 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
                         continue;
 
                     drawMap(canvas);
-                    robot.update();
-                    robot1.update();
+                    for (int i = 0; i < robots.size(); i++) {
+                        robots.get(i).update();
+                    }
 
                 } finally {
                     if (canvas != null) {
@@ -131,6 +136,11 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
                     e.printStackTrace();
                 }
             }
+            for (int i = 0; i < robots.size(); i++) {
+                robots.get(i).destroy();
+            }
+            LocalBroadcastManager.getInstance(DrawingView.this.getContext())
+                    .unregisterReceiver(mRobotsCommandsReceiver);
         }
 
         private void drawMap(Canvas canvas) {
@@ -156,13 +166,12 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
         }
-
     }
 
-    class BotMessagesBroadcastReceiver extends BroadcastReceiver {
+    public static class RobotsCommandsReceiver extends BroadcastReceiver {
         private Map mMap;
 
-        BotMessagesBroadcastReceiver(Map map) {
+        public RobotsCommandsReceiver(Map map) {
             mMap = map;
         }
 
