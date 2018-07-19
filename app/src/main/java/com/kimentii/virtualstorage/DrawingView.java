@@ -14,10 +14,14 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.kimentii.virtualstorage.commands.Command;
+import com.kimentii.virtualstorage.commands.MoveBoxCommand;
 import com.kimentii.virtualstorage.commands.MoveCommand;
 import com.kimentii.virtualstorage.commands.ReserveBoxCommand;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static com.kimentii.virtualstorage.Robot.EXTRA_COMMAND;
 
@@ -113,11 +117,25 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
             ArrayList<Command> commands = new ArrayList<>();
             commands.add(new MoveCommand());
             commands.add(new ReserveBoxCommand());
+            commands.add(new MoveBoxCommand());
+            Collections.sort(commands, new Comparator<Command>() {
+                @Override
+                public int compare(Command command, Command command2) {
+                    return command2.getPriority() - command.getPriority();
+                }
+            });
             Robot robot = new Robot(mContext, mMap, 1, commands);
 
             ArrayList<Command> commands1 = new ArrayList<>();
             commands1.add(new MoveCommand());
             commands1.add(new ReserveBoxCommand());
+            commands1.add(new MoveBoxCommand());
+            Collections.sort(commands1, new Comparator<Command>() {
+                @Override
+                public int compare(Command command, Command command2) {
+                    return command2.getPriority() - command.getPriority();
+                }
+            });
             Robot robot1 = new Robot(mContext, mMap, 1, commands1);
             while (mRunning) {
                 canvas = null;

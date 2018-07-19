@@ -15,7 +15,7 @@ public class MoveCommand extends Command {
     private int mToY = -1;
 
     public MoveCommand() {
-        super(1);
+        super(COMMAND_PRIORITY);
     }
 
     @Override
@@ -28,6 +28,9 @@ public class MoveCommand extends Command {
 
     @Override
     public boolean prepareCommandAndUpdateRobot(Robot robot, Map map) {
+        if (robot.isNearAim()) {
+            // TODO: realize movement
+        }
         if (robot.getLocationX() == -1 && robot.getLocationY() == -1) {
             int startX = map.getStartX();
             int startY = map.getStartY();

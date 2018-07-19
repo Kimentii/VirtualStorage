@@ -19,7 +19,8 @@ public class ReserveBoxCommand extends Command {
 
     @Override
     public void init() {
-
+        mAimX = -1;
+        mAimY = -1;
     }
 
     @Override

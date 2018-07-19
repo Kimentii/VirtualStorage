@@ -23,4 +23,8 @@ public abstract class Command implements Serializable {
     public abstract boolean prepareCommandAndUpdateRobot(Robot robot, Map map);
 
     public abstract void updateMap(Map map);
+
+    public int getPriority() {
+        return mPriority;
+    }
 }

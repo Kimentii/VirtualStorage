@@ -46,6 +46,7 @@ public class Robot {
                 intent.setAction(ROBOTS_COMMANDS_FILTER);
                 intent.putExtra(EXTRA_COMMAND, mAvailableCommands.get(i));
                 LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
+                break;
             }
         }
     }
@@ -58,6 +59,31 @@ public class Robot {
     public void setAim(int x, int y) {
         mAimX = x;
         mAimY = y;
+    }
+
+    public boolean isNearAim() {
+        if (mAimX == -1 || mAimY == -1) {
+            return false;
+        }
+        if ((Math.abs(mAimX - mLocationX) == 0 || Math.abs(mAimX - mLocationX) == 1)
+                && (Math.abs(mAimY - mLocationY) == 0 || Math.abs(mAimY - mLocationY) == 1)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isReadyToMoveAim() {
+        if (mAimX == -1 || mAimY == -1 || !isNearAim()) {
+            return false;
+        }
+        int dX = -(int) Math.signum(mMap.getEndX() - mAimX);
+        int dY = -(int) Math.signum(mMap.getEndY() - mAimY);
+        if (dX == 0 || dY == 0) {
+            if ((mAimX + dX) == mLocationX && (mAimY + dY) == mLocationY) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean hasAim() {
