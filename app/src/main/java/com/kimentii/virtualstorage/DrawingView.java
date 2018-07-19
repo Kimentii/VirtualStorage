@@ -107,7 +107,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
             Canvas canvas;
 
             Robot robot = new Robot(mContext, mMap, 1, CommandsFactory.getAllCommands());
-            Robot robot1 = new Robot(mContext, mMap, 1, CommandsFactory.getAllCommands());
+            Robot robot1 = new Robot(mContext, mMap, 2, CommandsFactory.getAllCommands());
 
             while (mRunning) {
                 canvas = null;

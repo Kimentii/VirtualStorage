@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.kimentii.virtualstorage.commands.Command;
 
@@ -100,6 +101,21 @@ public class Robot {
         }
         int dX = (int) Math.signum(mMap.getEndX() - mAim.getX());
         int dY = (int) Math.signum(mMap.getEndY() - mAim.getY());
+        if (dX == 0) {
+            if (mMap.isFreeCell(mAim.getX() + 1, mAim.getY())
+                    || mMap.isEndCell(mAim.getX() + 1, mAim.getY())) {
+                dX = 1;
+            } else {
+                dX = -1;
+            }
+        } else if (dY == 0) {
+            if (mMap.isFreeCell(mAim.getX(), mAim.getY() + 1)
+                    || mMap.isEndCell(mAim.getX(), mAim.getY() + 1)) {
+                dY = 1;
+            } else {
+                dY = -1;
+            }
+        }
         if (mMap.isFreeCell(mAim.getX() + dX, mAim.getY())
                 || mMap.isEndCell(mAim.getX() + dX, mAim.getY())) {
             return new Cell(mAim.getX() + dX, mAim.getY());
@@ -107,6 +123,18 @@ public class Robot {
         if (mMap.isFreeCell(mAim.getX(), mAim.getY() + dY)
                 || mMap.isEndCell(mAim.getX(), mAim.getY() + dY)) {
             return new Cell(mAim.getX(), mAim.getY() + dY);
+        }
+        return null;
+    }
+
+    public Cell getRobotShouldStayPosition() {
+        Cell aimNextPosition = getAimNextPosition();
+        if (aimNextPosition != null) {
+            int dX = -(int) Math.signum(getAimNextPosition().getX() - getAim().getX());
+            int dY = -(int) Math.signum(getAimNextPosition().getY() - getAim().getY());
+            int robotShouldStayX = getAim().getX() + dX;
+            int robotShouldStayY = getAim().getY() + dY;
+            return new Cell(robotShouldStayX, robotShouldStayY);
         }
         return null;
     }
@@ -129,6 +157,10 @@ public class Robot {
 
     public int getLocationY() {
         return mLocationY;
+    }
+
+    public int getId() {
+        return mId;
     }
 
     class RobotsCommandsReceiver extends BroadcastReceiver {
