@@ -23,8 +23,7 @@ public class Robot {
     private RobotsCommandsReceiver mRobotsCommandsReceiver;
     private int mLocationX = -1;
     private int mLocationY = -1;
-    private int mAimX = -1;
-    private int mAimY = -1;
+    private Cell mAim = null;
     private int mId;
 
     public Robot(Context context, final Map map, int id, ArrayList<Command> availableCommands) {
@@ -57,45 +56,71 @@ public class Robot {
     }
 
     public void setAim(int x, int y) {
-        mAimX = x;
-        mAimY = y;
+        mAim = new Cell(x, y);
     }
 
     public boolean isNearAim() {
-        if (mAimX == -1 || mAimY == -1) {
+        if (!hasAim()) {
             return false;
         }
-        if ((Math.abs(mAimX - mLocationX) == 0 || Math.abs(mAimX - mLocationX) == 1)
-                && (Math.abs(mAimY - mLocationY) == 0 || Math.abs(mAimY - mLocationY) == 1)) {
+        if ((Math.abs(mAim.getX() - mLocationX) == 0 || Math.abs(mAim.getX() - mLocationX) == 1)
+                && (Math.abs(mAim.getY() - mLocationY) == 0 || Math.abs(mAim.getY() - mLocationY) == 1)) {
             return true;
         }
         return false;
     }
 
     public boolean isReadyToMoveAim() {
-        if (mAimX == -1 || mAimY == -1 || !isNearAim()) {
+        if (!hasAim() || !isNearAim()) {
             return false;
         }
-        int dX = -(int) Math.signum(mMap.getEndX() - mAimX);
-        int dY = -(int) Math.signum(mMap.getEndY() - mAimY);
-        if (dX == 0 || dY == 0) {
-            if ((mAimX + dX) == mLocationX && (mAimY + dY) == mLocationY) {
-                return true;
-            }
+        Cell aimNextPosition = getAimNextPosition();
+        if (aimNextPosition == null) {
+            return false;
         }
+        int dX = -(int) Math.signum(aimNextPosition.getX() - mAim.getX());
+        int dY = -(int) Math.signum(aimNextPosition.getY() - mAim.getY());
+        if ((mAim.getX() + dX) == mLocationX && (mAim.getY() + dY) == mLocationY) {
+            return true;
+        }
+       /* int dX = -(int) Math.signum(mMap.getEndX() - mAim.getX());
+        int dY = -(int) Math.signum(mMap.getEndY() - mAim.getY());
+        if ((mAim.getX() + dX) == mLocationX && mAim.getY() == mLocationY) {
+            return true;
+        }
+        if (mAim.getX() == mLocationX && (mAim.getY() + dY) == mLocationY) {
+            return true;
+        }*/
         return false;
     }
 
+    public Cell getAimNextPosition() {
+        if (!hasAim()) {
+            return null;
+        }
+        int dX = (int) Math.signum(mMap.getEndX() - mAim.getX());
+        int dY = (int) Math.signum(mMap.getEndY() - mAim.getY());
+        if (mMap.isFreeCell(mAim.getX() + dX, mAim.getY())
+                || mMap.isEndCell(mAim.getX() + dX, mAim.getY())) {
+            return new Cell(mAim.getX() + dX, mAim.getY());
+        }
+        if (mMap.isFreeCell(mAim.getX(), mAim.getY() + dY)
+                || mMap.isEndCell(mAim.getX(), mAim.getY() + dY)) {
+            return new Cell(mAim.getX(), mAim.getY() + dY);
+        }
+        return null;
+    }
+
     public boolean hasAim() {
-        return mAimX != -1;
+        return mAim != null;
     }
 
-    public int getAimX() {
-        return mAimX;
+    public void clearAim() {
+        mAim = null;
     }
 
-    public int getAimY() {
-        return mAimY;
+    public Cell getAim() {
+        return mAim;
     }
 
     public int getLocationX() {

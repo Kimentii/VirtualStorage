@@ -65,8 +65,8 @@ public class GlobalConfigurations {
         return sGlobalConfigurations;
     }
 
-    public Map getMap() {
-        return mMap;
+    public Map getMapCopy() {
+        return mMap.getCopy();
     }
 
     private class JsonMap {

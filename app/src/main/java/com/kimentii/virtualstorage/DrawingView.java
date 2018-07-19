@@ -14,14 +14,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.kimentii.virtualstorage.commands.Command;
-import com.kimentii.virtualstorage.commands.MoveBoxCommand;
-import com.kimentii.virtualstorage.commands.MoveCommand;
-import com.kimentii.virtualstorage.commands.ReserveBoxCommand;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 
 import static com.kimentii.virtualstorage.Robot.EXTRA_COMMAND;
 
@@ -79,7 +71,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         public DrawingThread(SurfaceHolder surfaceHolder) {
             this.mSurfaceHolder = surfaceHolder;
             GlobalConfigurations globalConfigurations = GlobalConfigurations.getInstance(mContext);
-            mMap = globalConfigurations.getMap();
+            mMap = globalConfigurations.getMapCopy();
             final int totalHeight = DrawingView.this.getHeight();
             final int totalWidth = DrawingView.this.getWidth();
             //Log.d(TAG, "screen: " + totalHeight + "x" + totalWidth);

@@ -46,6 +46,16 @@ public class Map {
         return true;
     }
 
+    public boolean isEndCell(int x, int y) {
+        if (x >= mMapWidth || y >= mMapHeight || x < 0 || y < 0) {
+            return false;
+        }
+        if (mMap[y][x] != GlobalConfigurations.SYMBOL_END) {
+            return false;
+        }
+        return true;
+    }
+
     public Map getCopy() {
         char[][] map = new char[getMapHeight()][getMapWidth()];
         for (int i = 0; i < getMapHeight(); i++) {

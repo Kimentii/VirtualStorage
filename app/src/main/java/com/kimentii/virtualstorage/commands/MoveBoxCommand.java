@@ -1,5 +1,6 @@
 package com.kimentii.virtualstorage.commands;
 
+import com.kimentii.virtualstorage.Cell;
 import com.kimentii.virtualstorage.GlobalConfigurations;
 import com.kimentii.virtualstorage.Map;
 import com.kimentii.virtualstorage.Robot;
@@ -31,28 +32,50 @@ public class MoveBoxCommand extends Command {
     @Override
     public boolean prepareCommandAndUpdateRobot(Robot robot, Map map) {
         if (robot.isReadyToMoveAim()) {
-            int dX = (int) Math.signum(map.getEndX() - robot.getAimX());
-            int dY = (int) Math.signum(map.getEndY() - robot.getAimY());
-            if (map.isFreeCell(robot.getAimX() + dX, robot.getAimY() + dY)) {
+            Cell aimNextPosition = robot.getAimNextPosition();
+            if (aimNextPosition != null) {
+                if (map.isFreeCell(aimNextPosition.getX(), aimNextPosition.getY())) {
+                    mFromX = robot.getLocationX();
+                    mFromY = robot.getLocationY();
+                    mToX = robot.getAim().getX();
+                    mToY = robot.getAim().getY();
+                    mNewBoxX = aimNextPosition.getX();
+                    mNewBoxY = aimNextPosition.getY();
+                    robot.setAim(mNewBoxX, mNewBoxY);
+                    robot.setNewLocation(mToX, mToY);
+                    return true;
+                } else if (map.isEndCell(aimNextPosition.getX(), aimNextPosition.getY())) {
+                    mFromX = robot.getLocationX();
+                    mFromY = robot.getLocationY();
+                    mToX = robot.getAim().getX();
+                    mToY = robot.getAim().getY();
+                    robot.clearAim();
+                    robot.setNewLocation(mToX, mToY);
+                    return true;
+                }
+            }
+            /*int dX = (int) Math.signum(map.getEndX() - robot.getAim().getX());
+            int dY = (int) Math.signum(map.getEndY() - robot.getAim().getY());
+            if (map.isFreeCell(robot.getAim().getX() + dX, robot.getAim().getY() + dY)) {
                 mFromX = robot.getLocationX();
                 mFromY = robot.getLocationY();
-                mToX = robot.getAimX();
-                mToY = robot.getAimY();
-                mNewBoxX = robot.getAimX() + dX;
-                mNewBoxY = robot.getAimY() + dY;
+                mToX = robot.getAim().getX();
+                mToY = robot.getAim().getY();
+                mNewBoxX = robot.getAim().getX() + dX;
+                mNewBoxY = robot.getAim().getY() + dY;
                 robot.setAim(mNewBoxX, mNewBoxY);
                 robot.setNewLocation(mToX, mToY);
                 return true;
-            } else if (map.getSymbolAt(robot.getAimX() + dX, robot.getAimY() + dY)
+            } else if (map.getSymbolAt(robot.getAim().getX() + dX, robot.getAim().getY() + dY)
                     == GlobalConfigurations.SYMBOL_END) {
                 mFromX = robot.getLocationX();
                 mFromY = robot.getLocationY();
-                mToX = robot.getAimX();
-                mToY = robot.getAimY();
-                robot.setAim(-1, -1);
+                mToX = robot.getAim().getX();
+                mToY = robot.getAim().getY();
+                robot.clearAim();
                 robot.setNewLocation(mToX, mToY);
                 return true;
-            }
+            }*/
         }
         return false;
     }
