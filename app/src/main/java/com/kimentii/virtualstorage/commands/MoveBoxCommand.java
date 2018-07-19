@@ -43,6 +43,15 @@ public class MoveBoxCommand extends Command {
                 robot.setAim(mNewBoxX, mNewBoxY);
                 robot.setNewLocation(mToX, mToY);
                 return true;
+            } else if (map.getSymbolAt(robot.getAimX() + dX, robot.getAimY() + dY)
+                    == GlobalConfigurations.SYMBOL_END) {
+                mFromX = robot.getLocationX();
+                mFromY = robot.getLocationY();
+                mToX = robot.getAimX();
+                mToY = robot.getAimY();
+                robot.setAim(-1, -1);
+                robot.setNewLocation(mToX, mToY);
+                return true;
             }
         }
         return false;
@@ -52,6 +61,8 @@ public class MoveBoxCommand extends Command {
     public void updateMap(Map map) {
         map.setSymbolAt(mFromX, mFromY, GlobalConfigurations.SYMBOL_FREE_SPACE);
         map.setSymbolAt(mToX, mToY, GlobalConfigurations.SYMBOL_ROBOT);
-        map.setSymbolAt(mNewBoxX, mNewBoxY, GlobalConfigurations.SYMBOL_RESERVED_BOX);
+        if (mNewBoxX != -1 && mNewBoxY != -1) {
+            map.setSymbolAt(mNewBoxX, mNewBoxY, GlobalConfigurations.SYMBOL_RESERVED_BOX);
+        }
     }
 }
