@@ -114,29 +114,9 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         public void run() {
             Canvas canvas;
 
-            ArrayList<Command> commands = new ArrayList<>();
-            commands.add(new MoveCommand());
-            commands.add(new ReserveBoxCommand());
-            commands.add(new MoveBoxCommand());
-            Collections.sort(commands, new Comparator<Command>() {
-                @Override
-                public int compare(Command command, Command command2) {
-                    return command2.getPriority() - command.getPriority();
-                }
-            });
-            Robot robot = new Robot(mContext, mMap, 1, commands);
+            Robot robot = new Robot(mContext, mMap, 1, CommandsFactory.getAllCommands());
+            Robot robot1 = new Robot(mContext, mMap, 1, CommandsFactory.getAllCommands());
 
-            ArrayList<Command> commands1 = new ArrayList<>();
-            commands1.add(new MoveCommand());
-            commands1.add(new ReserveBoxCommand());
-            commands1.add(new MoveBoxCommand());
-            Collections.sort(commands1, new Comparator<Command>() {
-                @Override
-                public int compare(Command command, Command command2) {
-                    return command2.getPriority() - command.getPriority();
-                }
-            });
-            Robot robot1 = new Robot(mContext, mMap, 1, commands1);
             while (mRunning) {
                 canvas = null;
                 try {
