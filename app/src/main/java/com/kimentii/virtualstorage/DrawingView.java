@@ -9,6 +9,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -25,9 +27,9 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
     private DrawingThread mDrawingThread;
     private Context mContext;
+    private Handler mLogHandler;
     private Map mMap;
     private RobotsCommandsReceiver mRobotsCommandsReceiver;
-
 
     private Paint mRedPaint;
     private Paint mWhitPaint;
@@ -40,9 +42,10 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap mEndBitmap;
     private ArrayList<Robot> mRobots;
 
-    public DrawingView(Context context, int robotsNum) {
+    public DrawingView(Context context, Handler logHandler, int robotsNum) {
         super(context);
         mContext = context;
+        mLogHandler = logHandler;
         getHolder().addCallback(this);
         mMap = GlobalConfigurations.getInstance(mContext).getMapCopy();
 
@@ -221,9 +224,13 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive: " + mMap);
             Command command = (Command) intent.getExtras().getSerializable(EXTRA_COMMAND);
             command.updateMap(mMap);
+
+            Message message = new Message();
+            message.what = MainActivity.ACTION_LOG;
+            message.obj = "asdf";
+            mLogHandler.sendMessage(message);
         }
     }
 }
