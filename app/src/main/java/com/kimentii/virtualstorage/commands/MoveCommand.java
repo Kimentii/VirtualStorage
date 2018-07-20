@@ -30,16 +30,16 @@ public class MoveCommand extends Command {
 
     @Override
     public boolean prepareCommandAndUpdateRobot(Robot robot, Map map) {
-        Log.d(TAG, ": " + robot.getId());
+//        Log.d(TAG, ": " + robot.getId());
         if (robot.isNearAim()) {
-            Log.d(TAG, "nearBy: " + robot.getId());
+//            Log.d(TAG, "nearBy: " + robot.getId());
             Cell aimNextPosition = robot.getAimNextPosition();
             if (aimNextPosition != null) {
-                Log.d(TAG, "aimNextPosition: " + robot.getId());
+//                Log.d(TAG, "aimNextPosition: " + robot.getId());
                 Cell robotShouldStayCell = robot.getRobotShouldStayPosition();
                 int robotDX = (int) Math.signum(robotShouldStayCell.getX() - robot.getLocationX());
                 int robotDY = (int) Math.signum(robotShouldStayCell.getY() - robot.getLocationY());
-                Log.d(TAG, "prepareCommandAndUpdateRobot: " + robot.getId() + ": (" + robotDX + "," + robotDY + ")");
+//                Log.d(TAG, "prepareCommandAndUpdateRobot: " + robot.getId() + ": (" + robotDX + "," + robotDY + ")");
                 if (robotDX == 0) {
                     if (map.isFreeCell(robot.getLocationX() + 1, robot.getLocationY() + robotDY)) {
                         robotDX = 1;
@@ -48,10 +48,10 @@ public class MoveCommand extends Command {
                     }
                 } else if (robotDY == 0) {
                     if (map.isFreeCell(robot.getLocationX() + robotDX, robot.getLocationY() + 1)) {
-                        Log.d(TAG, "prepareCommandAndUpdateRobot: set DY to 1");
+//                        Log.d(TAG, "prepareCommandAndUpdateRobot: set DY to 1");
                         robotDY = 1;
                     } else {
-                        Log.d(TAG, "prepareCommandAndUpdateRobot: set DY to -1");
+//                        Log.d(TAG, "prepareCommandAndUpdateRobot: set DY to -1");
                         robotDY = -1;
                     }
                 }
@@ -105,6 +105,7 @@ public class MoveCommand extends Command {
         if (mFromX != -1) {
             map.setSymbolAt(mFromX, mFromY, GlobalConfigurations.SYMBOL_FREE_SPACE);
         }
+        Log.d(TAG, "updateMap: move to(" + mToX + "," + mToY + ")");
         map.setSymbolAt(mToX, mToY, GlobalConfigurations.SYMBOL_ROBOT);
     }
 }

@@ -54,17 +54,14 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         mWhitPaint.setColor(Color.WHITE);
 
         setRobotsNum(robotsNum);
+
+        setWillNotDraw(false);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         mMap = GlobalConfigurations.getInstance(mContext).getMapCopy();
-        Log.d(TAG, "onDraw: ");
-        if (mRobots != null) {
-            for (int i = 0; i < mRobots.size(); i++) {
-                mRobots.get(i).die();
-            }
-        }
+        Log.d(TAG, "onDraw: " + mMap);
         for (int i = 0; i < mRobots.size(); i++) {
             mRobots.get(i).setMap(mMap);
             mRobots.get(i).born();
@@ -98,10 +95,6 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
                 mRobotsCommandsReceiver,
                 new IntentFilter(Robot.ROBOTS_COMMANDS_FILTER));
         Log.d(TAG, "surfaceCreated: ");
-
-        /*mDrawingThread = new DrawingThread(getHolder());
-        mDrawingThread.setRunning(true);
-        mDrawingThread.start();*/
     }
 
     @Override
@@ -113,15 +106,6 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
         Log.d(TAG, "surfaceDestroyed: ");
-       /* boolean retry = true;
-        mDrawingThread.setRunning(false);
-        while (retry) {
-            try {
-                mDrawingThread.join();
-                retry = false;
-            } catch (InterruptedException e) {
-            }
-        }*/
         for (int i = 0; i < mRobots.size(); i++) {
             mRobots.get(i).die();
         }
@@ -130,6 +114,11 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void setRobotsNum(int robotsNum) {
+        if (mRobots != null) {
+            for (int i = 0; i < mRobots.size(); i++) {
+                mRobots.get(i).die();
+            }
+        }
         mRobots = new ArrayList<>();
         for (int i = 0; i < robotsNum; i++) {
             mRobots.add(new Robot(mContext, GlobalConfigurations.getInstance(mContext).getMapCopy(),
@@ -137,7 +126,29 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    public void startDrawing() {
+        setWillNotDraw(true);
+        mDrawingThread = new DrawingThread(getHolder());
+        mDrawingThread.setRunning(true);
+        mDrawingThread.start();
+    }
+
+    public void stopDrawing() {
+        boolean retry = true;
+        mDrawingThread.setRunning(false);
+        while (retry) {
+            try {
+                mDrawingThread.join();
+                retry = false;
+            } catch (InterruptedException e) {
+            }
+        }
+        setRobotsNum(mRobots.size());
+        setWillNotDraw(false);
+    }
+
     private void drawMap(Canvas canvas) {
+        Log.d(TAG, "drawMap: " + mMap);
         canvas.drawColor(Color.GREEN);
         for (int y = 0; y < mMap.getMapHeight(); y++) {
             for (int x = 0; x < mMap.getMapWidth(); x++) {
@@ -181,19 +192,17 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         @Override
         public void run() {
             Canvas canvas;
-
             while (mRunning) {
                 canvas = null;
                 try {
                     canvas = mSurfaceHolder.lockCanvas(null);
                     if (canvas == null)
                         continue;
-
-                    drawMap(canvas);
+                    //Log.d(TAG, "run: Drawing: " + mMap);
                     for (int i = 0; i < mRobots.size(); i++) {
                         mRobots.get(i).update();
                     }
-
+                    drawMap(canvas);
                 } finally {
                     if (canvas != null) {
                         mSurfaceHolder.unlockCanvasAndPost(canvas);
@@ -212,7 +221,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive: ");
+            Log.d(TAG, "onReceive: " + mMap);
             Command command = (Command) intent.getExtras().getSerializable(EXTRA_COMMAND);
             command.updateMap(mMap);
         }
