@@ -7,10 +7,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private TextView mLogTextView;
+    private Button mStartButton;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
         LayoutInflater layoutInflater = getLayoutInflater();
         View menuView = layoutInflater.inflate(R.layout.menu, linearLayout, false);
+        mLogTextView = menuView.findViewById(R.id.tv_log);
+        mStartButton = menuView.findViewById(R.id.button_start);
         linearLayout.addView(menuView);
 
         DrawingView drawingView = new DrawingView(this);

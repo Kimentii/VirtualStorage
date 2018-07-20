@@ -70,6 +70,8 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         private Bitmap mBoxBitmap;
         private Bitmap mRobotBitmap;
         private Bitmap mReservedBoxBitmap;
+        private Bitmap mStartBitmap;
+        private Bitmap mEndBitmap;
 
         public DrawingThread(SurfaceHolder surfaceHolder) {
             this.mSurfaceHolder = surfaceHolder;
@@ -95,6 +97,10 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
             mRobotBitmap = Bitmap.createScaledBitmap(mRobotBitmap, mBlockWidth, mBlockHeight, false);
             mReservedBoxBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box);
             mReservedBoxBitmap = Bitmap.createScaledBitmap(mReservedBoxBitmap, mBlockWidth, mBlockHeight, false);
+            mStartBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.start_image);
+            mStartBitmap = Bitmap.createScaledBitmap(mStartBitmap, mBlockWidth, mBlockHeight, false);
+            mEndBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.end_image);
+            mEndBitmap = Bitmap.createScaledBitmap(mEndBitmap, mBlockWidth, mBlockHeight, false);
         }
 
         public void setRunning(boolean running) {
@@ -153,6 +159,10 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
                         canvas.drawBitmap(mReservedBoxBitmap, x * mBlockWidth, y * mBlockHeight, null);
                     } else if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_ROBOT) {
                         canvas.drawBitmap(mRobotBitmap, x * mBlockWidth, y * mBlockHeight, null);
+                    } else if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_START) {
+                        canvas.drawBitmap(mStartBitmap, x * mBlockWidth, y * mBlockHeight, null);
+                    } else if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_END) {
+                        canvas.drawBitmap(mEndBitmap, x * mBlockWidth, y * mBlockHeight, null);
                     } else {
                         Paint paint = null;
                         if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_BARRIER) {

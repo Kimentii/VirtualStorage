@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">VirtualStorage</string>
+    <string name="action_start">Start</string>
 </resources>
