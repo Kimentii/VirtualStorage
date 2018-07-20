@@ -10,19 +10,35 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:layout_weight="95"
+        android:layout_weight="90"
         android:gravity="bottom" />
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="5">
+        android:layout_weight="10">
+
+        <TextView
+            android:id="@+id/_tv_robots_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_robots_num" />
+
+        <Spinner
+            android:id="@+id/spinner_robots_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/_tv_robots_num"
+            android:layout_toRightOf="@id/_tv_robots_num"
+            android:entries="@array/robots_num" />
 
         <Button
             android:id="@+id/button_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_below="@id/_tv_robots_num"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
             android:text="@string/action_start" />
-    </FrameLayout>
+    </RelativeLayout>
 </LinearLayout>

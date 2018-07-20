@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">VirtualStorage</string>
     <string name="action_start">Start</string>
+    <string name="title_robots_num">Robots num:</string>
 </resources>
