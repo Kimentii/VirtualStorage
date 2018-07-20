@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.kimentii.virtualstorage.commands.BornCommand;
 import com.kimentii.virtualstorage.commands.Command;
 
 import java.util.ArrayList;
@@ -36,6 +37,17 @@ public class Robot {
         LocalBroadcastManager.getInstance(context).registerReceiver(mRobotsCommandsReceiver,
                 new IntentFilter(ROBOTS_COMMANDS_FILTER));
         mGlobalConfigurations = GlobalConfigurations.getInstance(context);
+    }
+
+    public void born() {
+        BornCommand bornCommand = new BornCommand();
+        bornCommand.init();
+        if (bornCommand.prepareCommandAndUpdateRobot(Robot.this, mMap)) {
+            Intent intent = new Intent();
+            intent.setAction(ROBOTS_COMMANDS_FILTER);
+            intent.putExtra(EXTRA_COMMAND, bornCommand);
+            LocalBroadcastManager.getInstance(mContext).sendBroadcastSync(intent);
+        }
     }
 
     public void update() {
@@ -139,7 +151,7 @@ public class Robot {
         return null;
     }
 
-    public void destroy() {
+    public void die() {
         if (mRobotsCommandsReceiver != null) {
             LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mRobotsCommandsReceiver);
         }
@@ -167,6 +179,10 @@ public class Robot {
 
     public int getId() {
         return mId;
+    }
+
+    public void setMap(Map map) {
+        mMap = map;
     }
 
     public static class RobotsCommandsReceiver extends BroadcastReceiver {

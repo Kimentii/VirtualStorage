@@ -28,13 +28,15 @@ public class ReserveBoxCommand extends Command {
         if (robot.hasAim()) {
             return false;
         }
-        for (int y = 0; y < map.getMapHeight(); y++) {
-            for (int x = 0; x < map.getMapWidth(); x++) {
-                if (map.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_FREE_BOX) {
-                    robot.setAim(x, y);
-                    mAimX = x;
-                    mAimY = y;
-                    return true;
+        if (robot.getLocationX() != -1) {
+            for (int y = 0; y < map.getMapHeight(); y++) {
+                for (int x = 0; x < map.getMapWidth(); x++) {
+                    if (map.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_FREE_BOX) {
+                        robot.setAim(x, y);
+                        mAimX = x;
+                        mAimY = y;
+                        return true;
+                    }
                 }
             }
         }

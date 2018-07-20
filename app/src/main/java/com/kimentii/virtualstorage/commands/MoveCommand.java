@@ -73,42 +73,27 @@ public class MoveCommand extends Command {
                 }
             }
         }
-        if (robot.getLocationX() == -1 && robot.getLocationY() == -1) {
-            int startX = map.getStartX();
-            int startY = map.getStartY();
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    if (map.isFreeCell(startX + i, startY + j)) {
-                        mToX = startX + i;
-                        mToY = startY + j;
-                        robot.setNewLocation(mToX, mToY);
-                        return true;
-                    }
+        if (robot.hasAim()) {
+            if (robot.getAimNextPosition() != null) {
+                Cell robotShouldStayCell = robot.getRobotShouldStayPosition();
+                int robotDX = (int) Math.signum(robotShouldStayCell.getX() - robot.getLocationX());
+                int robotDY = (int) Math.signum(robotShouldStayCell.getY() - robot.getLocationY());
+                if (map.isFreeCell(robot.getLocationX() + robotDX,
+                        robot.getLocationY() + robotDY)) {
+                    mToX = robot.getLocationX() + robotDX;
+                    mToY = robot.getLocationY() + robotDY;
+                } else if (map.isFreeCell(robot.getLocationX(), robot.getLocationY() + robotDY)) {
+                    mToX = robot.getLocationX();
+                    mToY = robot.getLocationY() + robotDY;
+                } else if (map.isFreeCell(robot.getLocationX() + robotDX, robot.getLocationY())) {
+                    mToX = robot.getLocationX() + robotDX;
+                    mToY = robot.getLocationY();
                 }
-            }
-        } else {
-            if (robot.hasAim()) {
-                if (robot.getAimNextPosition() != null) {
-                    Cell robotShouldStayCell = robot.getRobotShouldStayPosition();
-                    int robotDX = (int) Math.signum(robotShouldStayCell.getX() - robot.getLocationX());
-                    int robotDY = (int) Math.signum(robotShouldStayCell.getY() - robot.getLocationY());
-                    if (map.isFreeCell(robot.getLocationX() + robotDX,
-                            robot.getLocationY() + robotDY)) {
-                        mToX = robot.getLocationX() + robotDX;
-                        mToY = robot.getLocationY() + robotDY;
-                    } else if (map.isFreeCell(robot.getLocationX(), robot.getLocationY() + robotDY)) {
-                        mToX = robot.getLocationX();
-                        mToY = robot.getLocationY() + robotDY;
-                    } else if (map.isFreeCell(robot.getLocationX() + robotDX, robot.getLocationY())) {
-                        mToX = robot.getLocationX() + robotDX;
-                        mToY = robot.getLocationY();
-                    }
-                    if (mToX != -1) {
-                        mFromX = robot.getLocationX();
-                        mFromY = robot.getLocationY();
-                        robot.setNewLocation(mToX, mToY);
-                        return true;
-                    }
+                if (mToX != -1) {
+                    mFromX = robot.getLocationX();
+                    mFromY = robot.getLocationY();
+                    robot.setNewLocation(mToX, mToY);
+                    return true;
                 }
             }
         }
