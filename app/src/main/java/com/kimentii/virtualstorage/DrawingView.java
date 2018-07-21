@@ -32,7 +32,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
     private RobotsCommandsReceiver mRobotsCommandsReceiver;
 
     private Paint mRedPaint;
-    private Paint mWhitPaint;
+    private Paint mWhitePaint;
     private int mBlockHeight;
     private int mBlockWidth;
     private Bitmap mBoxBitmap;
@@ -44,17 +44,18 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
     public DrawingView(Context context, Handler logHandler, int robotsNum) {
         super(context);
+        Log.d(TAG, "DrawingView");
         mContext = context;
         mLogHandler = logHandler;
         getHolder().addCallback(this);
         mMap = GlobalConfigurations.getInstance(mContext).getMapCopy();
 
         mRedPaint = new Paint();
-        mWhitPaint = new Paint();
+        mWhitePaint = new Paint();
         mRedPaint.setStrokeWidth(1);
-        mWhitPaint.setStrokeWidth(1);
+        mWhitePaint.setStrokeWidth(1);
         mRedPaint.setColor(Color.RED);
-        mWhitPaint.setColor(Color.WHITE);
+        mWhitePaint.setColor(Color.WHITE);
 
         setRobotsNum(robotsNum);
 
@@ -63,6 +64,11 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     protected void onDraw(Canvas canvas) {
+
+        Message message = new Message();
+        message.what = MainActivity.ACTION_CLEAR_LOG;
+        mLogHandler.sendMessage(message);
+
         mMap = GlobalConfigurations.getInstance(mContext).getMapCopy();
         Log.d(TAG, "onDraw: " + mMap);
         for (int i = 0; i < mRobots.size(); i++) {
@@ -76,7 +82,6 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         final int totalHeight = getHeight();
         final int totalWidth = getWidth();
-        //Log.d(TAG, "screen: " + totalHeight + "x" + totalWidth);
         final int heightInBlocks = mMap.getMapHeight();
         final int widthInBlocks = mMap.getMapWidth();
         mBlockHeight = (int) Math.floor(((double) totalHeight) / heightInBlocks);
@@ -151,7 +156,6 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void drawMap(Canvas canvas) {
-        Log.d(TAG, "drawMap: " + mMap);
         canvas.drawColor(Color.GREEN);
         for (int y = 0; y < mMap.getMapHeight(); y++) {
             for (int x = 0; x < mMap.getMapWidth(); x++) {
@@ -170,13 +174,21 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
                     if (mMap.getSymbolAt(x, y) == GlobalConfigurations.SYMBOL_BARRIER) {
                         paint = mRedPaint;
                     } else {
-                        paint = mWhitPaint;
+                        paint = mWhitePaint;
                     }
                     canvas.drawRect(x * mBlockWidth, y * mBlockHeight,
                             x * mBlockWidth + mBlockWidth, y * mBlockHeight + mBlockHeight, paint);
                 }
             }
         }
+    }
+
+    public void destroy() {
+        for (int i = 0; i < mRobots.size(); i++) {
+            mRobots.get(i).die();
+        }
+        LocalBroadcastManager.getInstance(DrawingView.this.getContext())
+                .unregisterReceiver(mRobotsCommandsReceiver);
     }
 
     class DrawingThread extends Thread {

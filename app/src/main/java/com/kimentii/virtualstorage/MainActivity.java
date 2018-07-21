@@ -22,6 +22,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final int ACTION_LOG = 1;
+    public static final int ACTION_CLEAR_LOG = 99;
 
     private TextView mLogTextView;
     private Button mStartButton;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -74,15 +76,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!isDrawing) {
-                    mStartButton.setText(R.string.action_stop);
-                    mRobotsNumSpinner.setEnabled(false);
-                    mDrawingView.startDrawing();
+                    startDrawing();
                     isDrawing = true;
                 } else {
-                    mStartButton.setText(R.string.action_start);
-                    mRobotsNumSpinner.setEnabled(true);
-                    mDrawingView.stopDrawing();
-                    mLogTextView.setText("");
+                    stopDrawing();
                     isDrawing = false;
                 }
             }
@@ -93,13 +90,37 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(TAG, "onPause");
         if (isDrawing) {
-            mStartButton.setText(R.string.action_start);
-            mRobotsNumSpinner.setEnabled(true);
-            mDrawingView.stopDrawing();
-            mLogTextView.setText("");
+            stopDrawing();
             isDrawing = false;
         }
+        mLogTextView.setText("");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+        mDrawingView.destroy();
+    }
+
+    private void startDrawing() {
+        mStartButton.setText(R.string.action_stop);
+        mRobotsNumSpinner.setEnabled(false);
+        mDrawingView.startDrawing();
+    }
+
+    private void stopDrawing() {
+        mStartButton.setText(R.string.action_start);
+        mRobotsNumSpinner.setEnabled(true);
+        mDrawingView.stopDrawing();
         mLogTextView.setText("");
     }
 
@@ -113,6 +134,8 @@ public class MainActivity extends AppCompatActivity {
                     mLogTextView.append(record + "\n");
                     mLogScrollView.fullScroll(View.FOCUS_DOWN);
                 }
+            } else if (msg.what == ACTION_CLEAR_LOG) {
+                mLogTextView.setText("");
             }
         }
     }

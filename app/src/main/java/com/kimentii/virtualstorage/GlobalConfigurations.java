@@ -28,7 +28,6 @@ public class GlobalConfigurations {
     private Map mMap;
 
     private GlobalConfigurations(Context context) {
-        Log.d(TAG, "GlobalConfigurations: creating");
         AssetManager am = context.getAssets();
         InputStream inputStream = null;
         StringBuilder totalStr = new StringBuilder();
@@ -53,9 +52,9 @@ public class GlobalConfigurations {
         }
         mMap = new Map(map);
 
-        Log.d(TAG, "GlobalConfigurations: map width= " + mMap.getMapWidth() + " height= " + mMap.getMapHeight());
-        Log.d(TAG, "GlobalConfigurations: start x=" + mMap.getStartX() + " y=" + mMap.getStartY());
-        Log.d(TAG, "GlobalConfigurations: end x=" + mMap.getEndX() + " y=" + mMap.getStartY());
+//        Log.d(TAG, "GlobalConfigurations: map width= " + mMap.getMapWidth() + " height= " + mMap.getMapHeight());
+//        Log.d(TAG, "GlobalConfigurations: start x=" + mMap.getStartX() + " y=" + mMap.getStartY());
+//        Log.d(TAG, "GlobalConfigurations: end x=" + mMap.getEndX() + " y=" + mMap.getStartY());
     }
 
     public static GlobalConfigurations getInstance(Context context) {
