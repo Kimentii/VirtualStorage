@@ -92,6 +92,25 @@ public class MoveCommand extends Command {
                     robot.setNewLocation(mToX, mToY);
                 }
             }
+        } else {
+            int robotDX = (int) Math.signum(map.getStartX() - robot.getLocationX());
+            int robotDY = (int) Math.signum(map.getStartY() - robot.getLocationY());
+            if (map.isFreeCell(robot.getLocationX() + robotDX,
+                    robot.getLocationY() + robotDY)) {
+                mToX = robot.getLocationX() + robotDX;
+                mToY = robot.getLocationY() + robotDY;
+            } else if (map.isFreeCell(robot.getLocationX(), robot.getLocationY() + robotDY)) {
+                mToX = robot.getLocationX();
+                mToY = robot.getLocationY() + robotDY;
+            } else if (map.isFreeCell(robot.getLocationX() + robotDX, robot.getLocationY())) {
+                mToX = robot.getLocationX() + robotDX;
+                mToY = robot.getLocationY();
+            }
+            if (mToX != -1) {
+                mFromX = robot.getLocationX();
+                mFromY = robot.getLocationY();
+                robot.setNewLocation(mToX, mToY);
+            }
         }
     }
 

@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String[] choose = getResources().getStringArray(R.array.robots_num);
+                mLogTextView.setText("");
                 mDrawingView.setRobotsNum(Integer.valueOf(choose[i]));
                 mDrawingView.invalidate();
                 Log.d(TAG, "onItemSelected: " + i);
