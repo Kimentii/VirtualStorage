@@ -1,6 +1,5 @@
 package com.kimentii.virtualstorage;
 
-import com.kimentii.virtualstorage.commands.BornCommand;
 import com.kimentii.virtualstorage.commands.Command;
 import com.kimentii.virtualstorage.commands.MoveBoxCommand;
 import com.kimentii.virtualstorage.commands.MoveCommand;

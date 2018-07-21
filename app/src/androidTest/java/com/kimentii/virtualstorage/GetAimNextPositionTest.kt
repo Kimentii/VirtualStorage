@@ -69,7 +69,7 @@ class GetAimNextPositionTest {
         robot.setAim(2, 2)
 
         val result = Cell(2, 3)
-        //    Log.d("Test", "(" + robot.aimNextPosition.x + ", " + robot.aimNextPosition.y + ")")
+//        Log.d("Test", "(" + robot.aimNextPosition.x + ", " + robot.aimNextPosition.y + ")")
         assertEquals(robot.aimNextPosition, result)
     }
 

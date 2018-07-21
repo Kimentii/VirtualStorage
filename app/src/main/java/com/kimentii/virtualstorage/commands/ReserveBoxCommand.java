@@ -1,7 +1,5 @@
 package com.kimentii.virtualstorage.commands;
 
-import android.util.Log;
-
 import com.kimentii.virtualstorage.GlobalConfigurations;
 import com.kimentii.virtualstorage.Map;
 import com.kimentii.virtualstorage.Robot;
@@ -49,7 +47,6 @@ public class ReserveBoxCommand extends Command {
 
     @Override
     public void updateMap(Map map) {
-        Log.d(TAG, "updateMap: " + mAimX + " " + mAimY);
         map.setSymbolAt(mAimX, mAimY, GlobalConfigurations.SYMBOL_RESERVED_BOX);
     }
 

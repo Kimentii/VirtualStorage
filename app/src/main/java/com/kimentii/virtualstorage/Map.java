@@ -1,8 +1,7 @@
 package com.kimentii.virtualstorage;
 
-import android.util.Log;
-
-import static com.kimentii.virtualstorage.GlobalConfigurations.*;
+import static com.kimentii.virtualstorage.GlobalConfigurations.SYMBOL_END;
+import static com.kimentii.virtualstorage.GlobalConfigurations.SYMBOL_START;
 
 public class Map {
     private static final String TAG = Map.class.getSimpleName();

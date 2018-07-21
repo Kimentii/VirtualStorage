@@ -184,11 +184,11 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         private SurfaceHolder mSurfaceHolder;
 
 
-        public DrawingThread(SurfaceHolder surfaceHolder) {
+        DrawingThread(SurfaceHolder surfaceHolder) {
             this.mSurfaceHolder = surfaceHolder;
         }
 
-        public void setRunning(boolean running) {
+        void setRunning(boolean running) {
             this.mRunning = running;
         }
 

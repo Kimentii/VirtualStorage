@@ -27,6 +27,8 @@
             android:id="@+id/_tv_robots_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:text="@string/title_robots_num" />
 
         <Spinner
@@ -43,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/_tv_robots_num"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"
+            android:layout_margin="15dp"
             android:text="@string/action_start" />
     </RelativeLayout>
 </LinearLayout>

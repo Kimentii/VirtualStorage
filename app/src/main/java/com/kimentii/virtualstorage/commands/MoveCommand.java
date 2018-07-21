@@ -1,7 +1,5 @@
 package com.kimentii.virtualstorage.commands;
 
-import android.util.Log;
-
 import com.kimentii.virtualstorage.Cell;
 import com.kimentii.virtualstorage.GlobalConfigurations;
 import com.kimentii.virtualstorage.Map;
@@ -36,7 +34,6 @@ public class MoveCommand extends Command {
                 Cell robotShouldStayCell = robot.getRobotShouldStayPosition();
                 int robotDX = (int) Math.signum(robotShouldStayCell.getX() - robot.getLocationX());
                 int robotDY = (int) Math.signum(robotShouldStayCell.getY() - robot.getLocationY());
-//                Log.d(TAG, "hasSomethingToChange: " + robot.getId() + ": (" + robotDX + "," + robotDY + ")");
                 if (robotDX == 0) {
                     if (map.isFreeCell(robot.getLocationX() + 1, robot.getLocationY() + robotDY)) {
                         robotDX = 1;
@@ -45,10 +42,8 @@ public class MoveCommand extends Command {
                     }
                 } else if (robotDY == 0) {
                     if (map.isFreeCell(robot.getLocationX() + robotDX, robot.getLocationY() + 1)) {
-//                        Log.d(TAG, "hasSomethingToChange: set DY to 1");
                         robotDY = 1;
                     } else {
-//                        Log.d(TAG, "hasSomethingToChange: set DY to -1");
                         robotDY = -1;
                     }
                 }
@@ -124,7 +119,6 @@ public class MoveCommand extends Command {
         if (mFromX != -1) {
             map.setSymbolAt(mFromX, mFromY, GlobalConfigurations.SYMBOL_FREE_SPACE);
         }
-        Log.d(TAG, "updateMap: move to(" + mToX + "," + mToY + ")");
         map.setSymbolAt(mToX, mToY, GlobalConfigurations.SYMBOL_ROBOT);
     }
 

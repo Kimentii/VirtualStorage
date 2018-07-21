@@ -20,7 +20,6 @@ public class Robot {
     private ArrayList<Command> mAvailableCommands;
 
     private Context mContext;
-    private GlobalConfigurations mGlobalConfigurations;
     private RobotsCommandsReceiver mRobotsCommandsReceiver;
     private int mLocationX = -1;
     private int mLocationY = -1;
@@ -35,7 +34,6 @@ public class Robot {
         mRobotsCommandsReceiver = new RobotsCommandsReceiver(mMap);
         LocalBroadcastManager.getInstance(context).registerReceiver(mRobotsCommandsReceiver,
                 new IntentFilter(ROBOTS_COMMANDS_FILTER));
-        mGlobalConfigurations = GlobalConfigurations.getInstance(context);
     }
 
     public void born() {
