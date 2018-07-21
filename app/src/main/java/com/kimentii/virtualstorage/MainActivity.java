@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: ");
+//        Log.d(TAG, "onCreate: ");
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -62,12 +62,12 @@ public class MainActivity extends AppCompatActivity {
                 mLogTextView.setText("");
                 mDrawingView.setRobotsNum(Integer.valueOf(choose[i]));
                 mDrawingView.invalidate();
-                Log.d(TAG, "onItemSelected: " + i);
+//                Log.d(TAG, "onItemSelected: " + i);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                Log.d(TAG, "onNothingSelected: ");
+//                Log.d(TAG, "onNothingSelected: ");
 
             }
         });
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
+//        Log.d(TAG, "onPause");
         if (isDrawing) {
             stopDrawing();
             isDrawing = false;
@@ -99,15 +99,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume");
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy");
         mDrawingView.destroy();
     }
 

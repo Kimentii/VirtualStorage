@@ -44,7 +44,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
     public DrawingView(Context context, Handler logHandler, int robotsNum) {
         super(context);
-        Log.d(TAG, "DrawingView");
+        //Log.d(TAG, "DrawingView");
         mContext = context;
         mLogHandler = logHandler;
         getHolder().addCallback(this);
@@ -70,7 +70,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         mLogHandler.sendMessage(message);
 
         mMap = GlobalConfigurations.getInstance(mContext).getMapCopy();
-        Log.d(TAG, "onDraw: " + mMap);
+        //Log.d(TAG, "onDraw: " + mMap);
         for (int i = 0; i < mRobots.size(); i++) {
             mRobots.get(i).setMap(mMap);
             mRobots.get(i).born();
@@ -102,18 +102,18 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         LocalBroadcastManager.getInstance(DrawingView.this.getContext()).registerReceiver(
                 mRobotsCommandsReceiver,
                 new IntentFilter(Robot.ROBOTS_COMMANDS_FILTER));
-        Log.d(TAG, "surfaceCreated: ");
+//        Log.d(TAG, "surfaceCreated: ");
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-        Log.d(TAG, "surfaceChanged: ");
+//        Log.d(TAG, "surfaceChanged: ");
 
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        Log.d(TAG, "surfaceDestroyed: ");
+//        Log.d(TAG, "surfaceDestroyed: ");
         for (int i = 0; i < mRobots.size(); i++) {
             mRobots.get(i).die();
         }
