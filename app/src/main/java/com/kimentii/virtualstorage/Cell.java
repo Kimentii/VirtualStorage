@@ -10,6 +10,15 @@ public class Cell {
         this.mY = y;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Cell) {
+            Cell otherCell = (Cell) obj;
+            return mX == otherCell.getX() && mY == otherCell.getY();
+        }
+        return false;
+    }
+
     public int getX() {
         return mX;
     }

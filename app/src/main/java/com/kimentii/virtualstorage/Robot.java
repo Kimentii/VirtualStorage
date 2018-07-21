@@ -112,6 +112,13 @@ public class Robot {
         }
         int dX = (int) Math.signum(mMap.getEndX() - mAim.getX());
         int dY = (int) Math.signum(mMap.getEndY() - mAim.getY());
+        if (mMap.isFreeCell(mAim.getX() + dX, mAim.getY())
+                || mMap.isEndCell(mAim.getX() + dX, mAim.getY())) {
+            return new Cell(mAim.getX() + dX, mAim.getY());
+        } else if (mMap.isFreeCell(mAim.getX(), mAim.getY() + dY)
+                || mMap.isEndCell(mAim.getX(), mAim.getY() + dY)) {
+            return new Cell(mAim.getX(), mAim.getY() + dY);
+        }
         if (dX == 0) {
             if (mMap.isFreeCell(mAim.getX() + 1, mAim.getY())
                     || mMap.isEndCell(mAim.getX() + 1, mAim.getY())) {
@@ -130,9 +137,14 @@ public class Robot {
         if (mMap.isFreeCell(mAim.getX() + dX, mAim.getY())
                 || mMap.isEndCell(mAim.getX() + dX, mAim.getY())) {
             return new Cell(mAim.getX() + dX, mAim.getY());
-        }
-        if (mMap.isFreeCell(mAim.getX(), mAim.getY() + dY)
+        } else if (mMap.isFreeCell(mAim.getX(), mAim.getY() + dY)
                 || mMap.isEndCell(mAim.getX(), mAim.getY() + dY)) {
+            return new Cell(mAim.getX(), mAim.getY() + dY);
+        } else if (mMap.isFreeCell(mAim.getX() - dX, mAim.getY())
+                || mMap.isEndCell(mAim.getX() - dX, mAim.getY())) {
+            return new Cell(mAim.getX() + dX, mAim.getY());
+        } else if (mMap.isFreeCell(mAim.getX(), mAim.getY() - dY)
+                || mMap.isEndCell(mAim.getX(), mAim.getY() - dY)) {
             return new Cell(mAim.getX(), mAim.getY() + dY);
         }
         return null;
