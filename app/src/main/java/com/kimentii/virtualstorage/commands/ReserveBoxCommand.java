@@ -12,21 +12,21 @@ public class ReserveBoxCommand extends Command {
 
     private int mAimX = -1;
     private int mAimY = -1;
+    private Robot mRobot;
 
     public ReserveBoxCommand() {
         super(COMMAND_PRIORITY);
     }
 
     @Override
-    public void init() {
+    public void init(Robot robot) {
         mAimX = -1;
         mAimY = -1;
-    }
+        mRobot = robot;
 
-    @Override
-    public boolean prepareCommandAndUpdateRobot(Robot robot, Map map) {
+        Map map = mRobot.getMap();
         if (robot.hasAim()) {
-            return false;
+            return;
         }
         if (robot.getLocationX() != -1) {
             for (int y = 0; y < map.getMapHeight(); y++) {
@@ -35,12 +35,16 @@ public class ReserveBoxCommand extends Command {
                         robot.setAim(x, y);
                         mAimX = x;
                         mAimY = y;
-                        return true;
+                        return;
                     }
                 }
             }
         }
-        return false;
+    }
+
+    @Override
+    public boolean hasSomethingToChange() {
+        return mAimX != -1;
     }
 
     @Override

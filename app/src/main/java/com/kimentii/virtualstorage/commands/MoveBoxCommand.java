@@ -8,6 +8,7 @@ import com.kimentii.virtualstorage.Robot;
 public class MoveBoxCommand extends Command {
     private static final int COMMAND_PRIORITY = 9;
 
+    private Robot mRobot;
     private int mFromX = -1;
     private int mFromY = -1;
     private int mToX = -1;
@@ -20,18 +21,17 @@ public class MoveBoxCommand extends Command {
     }
 
     @Override
-    public void init() {
+    public void init(Robot robot) {
         mFromX = -1;
         mFromY = -1;
         mToX = -1;
         mToY = -1;
         mNewBoxX = -1;
         mNewBoxY = -1;
-    }
+        mRobot = robot;
 
-    @Override
-    public boolean prepareCommandAndUpdateRobot(Robot robot, Map map) {
         if (robot.isReadyToMoveAim()) {
+            Map map = mRobot.getMap();
             Cell aimNextPosition = robot.getAimNextPosition();
             if (aimNextPosition != null) {
                 if (map.isFreeCell(aimNextPosition.getX(), aimNextPosition.getY())) {
@@ -43,7 +43,6 @@ public class MoveBoxCommand extends Command {
                     mNewBoxY = aimNextPosition.getY();
                     robot.setAim(mNewBoxX, mNewBoxY);
                     robot.setNewLocation(mToX, mToY);
-                    return true;
                 } else if (map.isEndCell(aimNextPosition.getX(), aimNextPosition.getY())) {
                     mFromX = robot.getLocationX();
                     mFromY = robot.getLocationY();
@@ -51,7 +50,6 @@ public class MoveBoxCommand extends Command {
                     mToY = robot.getAim().getY();
                     robot.clearAim();
                     robot.setNewLocation(mToX, mToY);
-                    return true;
                 }
             }
             /*int dX = (int) Math.signum(map.getEndX() - robot.getAim().getX());
@@ -77,7 +75,11 @@ public class MoveBoxCommand extends Command {
                 return true;
             }*/
         }
-        return false;
+    }
+
+    @Override
+    public boolean hasSomethingToChange() {
+        return mFromX != -1;
     }
 
     @Override

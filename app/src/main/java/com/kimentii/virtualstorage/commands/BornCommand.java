@@ -10,6 +10,7 @@ public class BornCommand extends Command {
     private static final String TAG = BornCommand.class.getSimpleName();
     private static final int COMMAND_PRIORITY = 12;
 
+    private Robot mRobot;
     private int mBurnX;
     private int mBurnY;
 
@@ -18,12 +19,12 @@ public class BornCommand extends Command {
     }
 
     @Override
-    public void init() {
-        Log.d(TAG, "init: ");
-    }
+    public void init(Robot robot) {
+        mBurnX = -1;
+        mBurnY = -1;
+        mRobot = robot;
 
-    @Override
-    public boolean prepareCommandAndUpdateRobot(Robot robot, Map map) {
+        Map map = mRobot.getMap();
         int startX = map.getStartX();
         int startY = map.getStartY();
         for (int k = 1; k < 10; k++) {
@@ -33,12 +34,16 @@ public class BornCommand extends Command {
                         mBurnX = startX + i;
                         mBurnY = startY + j;
                         robot.setNewLocation(mBurnX, mBurnY);
-                        return true;
                     }
                 }
             }
         }
-        return false;
+    }
+
+
+    @Override
+    public boolean hasSomethingToChange() {
+        return mBurnX != -1;
     }
 
     @Override
@@ -46,5 +51,10 @@ public class BornCommand extends Command {
         if (mBurnX != -1) {
             map.setSymbolAt(mBurnX, mBurnY, GlobalConfigurations.SYMBOL_ROBOT);
         }
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

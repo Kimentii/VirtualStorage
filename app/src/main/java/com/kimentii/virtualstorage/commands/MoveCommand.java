@@ -11,6 +11,7 @@ public class MoveCommand extends Command {
     public static final String TAG = MoveCommand.class.getSimpleName();
     private static final int COMMAND_PRIORITY = 1;
 
+    private Robot mRobot;
     private int mFromX = -1;
     private int mFromY = -1;
     private int mToX = -1;
@@ -21,25 +22,21 @@ public class MoveCommand extends Command {
     }
 
     @Override
-    public void init() {
+    public void init(Robot robot) {
+        mRobot = robot;
+        Map map = mRobot.getMap();
         mFromX = -1;
         mFromY = -1;
         mToX = -1;
         mToY = -1;
-    }
 
-    @Override
-    public boolean prepareCommandAndUpdateRobot(Robot robot, Map map) {
-//        Log.d(TAG, ": " + robot.getId());
         if (robot.isNearAim()) {
-//            Log.d(TAG, "nearBy: " + robot.getId());
             Cell aimNextPosition = robot.getAimNextPosition();
             if (aimNextPosition != null) {
-//                Log.d(TAG, "aimNextPosition: " + robot.getId());
                 Cell robotShouldStayCell = robot.getRobotShouldStayPosition();
                 int robotDX = (int) Math.signum(robotShouldStayCell.getX() - robot.getLocationX());
                 int robotDY = (int) Math.signum(robotShouldStayCell.getY() - robot.getLocationY());
-//                Log.d(TAG, "prepareCommandAndUpdateRobot: " + robot.getId() + ": (" + robotDX + "," + robotDY + ")");
+//                Log.d(TAG, "hasSomethingToChange: " + robot.getId() + ": (" + robotDX + "," + robotDY + ")");
                 if (robotDX == 0) {
                     if (map.isFreeCell(robot.getLocationX() + 1, robot.getLocationY() + robotDY)) {
                         robotDX = 1;
@@ -48,10 +45,10 @@ public class MoveCommand extends Command {
                     }
                 } else if (robotDY == 0) {
                     if (map.isFreeCell(robot.getLocationX() + robotDX, robot.getLocationY() + 1)) {
-//                        Log.d(TAG, "prepareCommandAndUpdateRobot: set DY to 1");
+//                        Log.d(TAG, "hasSomethingToChange: set DY to 1");
                         robotDY = 1;
                     } else {
-//                        Log.d(TAG, "prepareCommandAndUpdateRobot: set DY to -1");
+//                        Log.d(TAG, "hasSomethingToChange: set DY to -1");
                         robotDY = -1;
                     }
                 }
@@ -69,7 +66,7 @@ public class MoveCommand extends Command {
                     mFromX = robot.getLocationX();
                     mFromY = robot.getLocationY();
                     robot.setNewLocation(mToX, mToY);
-                    return true;
+                    return;
                 }
             }
         }
@@ -93,11 +90,14 @@ public class MoveCommand extends Command {
                     mFromX = robot.getLocationX();
                     mFromY = robot.getLocationY();
                     robot.setNewLocation(mToX, mToY);
-                    return true;
                 }
             }
         }
-        return false;
+    }
+
+    @Override
+    public boolean hasSomethingToChange() {
+        return mToX != -1;
     }
 
     @Override

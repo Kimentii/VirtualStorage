@@ -19,14 +19,9 @@ public abstract class Command implements Serializable {
         mPriority = priority;
     }
 
-    public abstract void init();
+    public abstract void init(Robot robot);
 
-    /**
-     * @param robot - robot, which will do command
-     * @param map   - robot map
-     * @return true if command has something to change otherwise return false
-     */
-    public abstract boolean prepareCommandAndUpdateRobot(Robot robot, Map map);
+    public abstract boolean hasSomethingToChange();
 
     public abstract void updateMap(Map map);
 

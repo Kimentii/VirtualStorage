@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.kimentii.virtualstorage.commands.BornCommand;
 import com.kimentii.virtualstorage.commands.Command;
@@ -41,8 +40,8 @@ public class Robot {
 
     public void born() {
         BornCommand bornCommand = new BornCommand();
-        bornCommand.init();
-        if (bornCommand.prepareCommandAndUpdateRobot(Robot.this, mMap)) {
+        bornCommand.init(this);
+        if (bornCommand.hasSomethingToChange()) {
             Intent intent = new Intent();
             intent.setAction(ROBOTS_COMMANDS_FILTER);
             intent.putExtra(EXTRA_COMMAND, bornCommand);
@@ -52,8 +51,8 @@ public class Robot {
 
     public void update() {
         for (int i = 0; i < mAvailableCommands.size(); i++) {
-            mAvailableCommands.get(i).init();
-            if ((mAvailableCommands.get(i).prepareCommandAndUpdateRobot(Robot.this, mMap))) {
+            mAvailableCommands.get(i).init(this);
+            if ((mAvailableCommands.get(i).hasSomethingToChange())) {
                 Intent intent = new Intent();
                 intent.setAction(ROBOTS_COMMANDS_FILTER);
                 intent.putExtra(EXTRA_COMMAND, mAvailableCommands.get(i));
@@ -179,6 +178,10 @@ public class Robot {
 
     public int getId() {
         return mId;
+    }
+
+    public Map getMap() {
+        return mMap;
     }
 
     public void setMap(Map map) {
