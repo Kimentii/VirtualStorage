@@ -25,6 +25,9 @@ public abstract class Command implements Serializable {
 
     public abstract void updateMap(Map map);
 
+    @Override
+    public abstract String toString();
+
     public int getPriority() {
         return mPriority;
     }

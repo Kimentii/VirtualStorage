@@ -52,4 +52,13 @@ public class ReserveBoxCommand extends Command {
         Log.d(TAG, "updateMap: " + mAimX + " " + mAimY);
         map.setSymbolAt(mAimX, mAimY, GlobalConfigurations.SYMBOL_RESERVED_BOX);
     }
+
+    @Override
+    public String toString() {
+        String str = null;
+        if (mRobot != null) {
+            str = String.format("R%d:reserve box (%d,%d)", mRobot.getId(), mAimX, mAimY);
+        }
+        return str;
+    }
 }

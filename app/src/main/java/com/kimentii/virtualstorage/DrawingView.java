@@ -229,7 +229,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
             Message message = new Message();
             message.what = MainActivity.ACTION_LOG;
-            message.obj = "asdf";
+            message.obj = command.toString();
             mLogHandler.sendMessage(message);
         }
     }

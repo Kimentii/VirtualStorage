@@ -108,4 +108,13 @@ public class MoveCommand extends Command {
         Log.d(TAG, "updateMap: move to(" + mToX + "," + mToY + ")");
         map.setSymbolAt(mToX, mToY, GlobalConfigurations.SYMBOL_ROBOT);
     }
+
+    @Override
+    public String toString() {
+        String str = null;
+        if (mRobot != null) {
+            str = String.format("R%d:move to (%d,%d)", mRobot.getId(), mToX, mToY);
+        }
+        return str;
+    }
 }

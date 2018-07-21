@@ -90,4 +90,13 @@ public class MoveBoxCommand extends Command {
             map.setSymbolAt(mNewBoxX, mNewBoxY, GlobalConfigurations.SYMBOL_RESERVED_BOX);
         }
     }
+
+    @Override
+    public String toString() {
+        String str = null;
+        if (mRobot != null) {
+            str = String.format("R%d:move box to (%d,%d)", mRobot.getId(), mNewBoxX, mNewBoxY);
+        }
+        return str;
+    }
 }
