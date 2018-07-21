@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mStartButton;
     private Spinner mRobotsNumSpinner;
     private DrawingView mDrawingView;
+    private ScrollView mLogScrollView;
     private boolean isDrawing;
 
     @Override
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         mLogTextView = menuView.findViewById(R.id.tv_log);
         mStartButton = menuView.findViewById(R.id.button_start);
         mRobotsNumSpinner = menuView.findViewById(R.id.spinner_robots_num);
+        mLogScrollView = menuView.findViewById(R.id.sv_log);
         linearLayout.addView(menuView);
 
         Handler handler = new LogHandler();
@@ -108,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 String record = (String) msg.obj;
                 if (record != null) {
                     mLogTextView.append(record + "\n");
+                    mLogScrollView.fullScroll(View.FOCUS_DOWN);
                 }
             }
         }
