@@ -91,7 +91,7 @@ public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
         mBoxBitmap = Bitmap.createScaledBitmap(mBoxBitmap, mBlockWidth, mBlockHeight, false);
         mRobotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
         mRobotBitmap = Bitmap.createScaledBitmap(mRobotBitmap, mBlockWidth, mBlockHeight, false);
-        mReservedBoxBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box);
+        mReservedBoxBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.box_light);
         mReservedBoxBitmap = Bitmap.createScaledBitmap(mReservedBoxBitmap, mBlockWidth, mBlockHeight, false);
         mStartBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.start_image);
         mStartBitmap = Bitmap.createScaledBitmap(mStartBitmap, mBlockWidth, mBlockHeight, false);
